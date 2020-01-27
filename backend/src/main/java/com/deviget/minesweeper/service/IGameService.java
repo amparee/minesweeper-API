@@ -10,6 +10,6 @@ public interface IGameService {
 
     public Board revealField(int posX, int posY);
 
-    public Board saveBoard();
+    public Board saveBoard(Board board);
 
 }

@@ -1,4 +1,4 @@
-package com.deviget.minesweeper.entity;
+package com.deviget.minesweeper.enums;
 
 public enum Cell {
 

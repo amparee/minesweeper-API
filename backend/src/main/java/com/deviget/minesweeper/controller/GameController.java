@@ -20,31 +20,35 @@ public class GameController {
     private final Log log = LogFactory.getLog(GameController.class);
 
     @GetMapping("/health-check")
-    public ResponseEntity<String> healthcheck(){
+    public ResponseEntity<String> healthcheck() {
+        log.info("Method: Health-check in GameController");
         return ResponseEntity.ok("Health check ok");
     }
 
 
     @GetMapping("/right-click")
-    public ResponseEntity<Board> rightClick(){
-        return ResponseEntity.ok(new Board(8, 3));
+    public ResponseEntity<String> rightClick() {
+        return ResponseEntity.ok("new Board(8, 3)");
     }
 
 
     @GetMapping("/left-click")
-    public ResponseEntity<Board> leftClick(){
-        return ResponseEntity.ok(new Board(8, 3));
+    public ResponseEntity<String> leftClick() {
+        return ResponseEntity.ok("");
     }
 
 
     @GetMapping("/new-game")
-    public ResponseEntity<Board> newGame(){
-        return ResponseEntity.ok(new Board(8, 3));
+    public ResponseEntity<String> newGame() {
+        return ResponseEntity.ok("");
     }
 
     @GetMapping("/save-game")
-    public ResponseEntity<Board> saveGame(){
-        return ResponseEntity.ok(new Board(8, 3));
+    public ResponseEntity<String> saveGame() {
+        Board board = new Board(10,10);
+        board.newGame(10,10,5);
+        gameService.saveBoard(board);
+        return ResponseEntity.ok("");
     }
 
 

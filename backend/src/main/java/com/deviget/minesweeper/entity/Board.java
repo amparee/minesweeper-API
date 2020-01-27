@@ -1,10 +1,17 @@
 package com.deviget.minesweeper.entity;
 
+import com.deviget.minesweeper.enums.Cell;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Random;
 
+@Document(collection="board")
 public class Board {
 
-    private String id;
+    @Id
+    private ObjectId id;
     private int minesLeft;
     private boolean inGame;
     private Cell[][] board;
@@ -12,6 +19,8 @@ public class Board {
     private int rows;
 
     public Board(int size, int mines) {
+        this.cols = size;
+        this.minesLeft = mines;
     }
 
     public void newGame(int rows, int cols, int mines) {
