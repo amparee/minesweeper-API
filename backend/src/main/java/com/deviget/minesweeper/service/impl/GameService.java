@@ -34,7 +34,7 @@ public class GameService implements IGameService {
 
     @Override
     public Board revealField(int posX, int posY) {
-        return null;
+        return new Board(3,3);
     }
 
     @Override

@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,10 +44,8 @@ public class GameController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping("/save-game")
-    public ResponseEntity<String> saveGame() {
-        Board board = new Board(10,10);
-        board.newGame(10,10,5);
+    @PostMapping("/save-game")
+    public ResponseEntity<String> saveGame(Board board) {
         gameService.saveBoard(board);
         return ResponseEntity.ok("");
     }

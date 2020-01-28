@@ -1,10 +1,8 @@
 package com.deviget.minesweeper.enums;
 
-public enum Cell {
-
+public enum TypeCell {
     EMPTY,
     FLAG,
-    NUMBER,
     BOMB,
     ONE,
     TWO,
@@ -13,7 +11,5 @@ public enum Cell {
     FIVE,
     SIX,
     SEVEN,
-    EIGHT,
-    REVEALED
-
+    EIGHT
 }

@@ -1,33 +1,27 @@
 package com.deviget.minesweeper.entity;
 
-import com.deviget.minesweeper.enums.Cell;
+import com.deviget.minesweeper.enums.TypeCell;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.lang.reflect.Type;
 import java.util.Random;
 
-@Document(collection="board")
+@Document(collection = "board")
 public class Board {
 
     @Id
     private ObjectId id;
     private int minesLeft;
-    private boolean inGame;
     private Cell[][] board;
     private int cols;
     private int rows;
 
-    public Board(int size, int mines) {
-        this.cols = size;
-        this.minesLeft = mines;
-    }
-
-    public void newGame(int rows, int cols, int mines) {
+    public Board(int rows, int cols, int mines) {
         this.cols = cols;
         this.rows = rows;
         this.makeBoard();
-        this.inGame = true;
         this.minesLeft = mines;
         this.setMines(mines);
         this.printBoard();
@@ -39,7 +33,7 @@ public class Board {
         this.board = new Cell[rows][cols];
         for (int x = 0; x < rows; x++) {
             for (int y = 0; y < cols; y++) {
-                this.board[x][y] = Cell.EMPTY;
+                this.board[x][y] = new Cell(false, TypeCell.EMPTY, false);
             }
         }
     }
@@ -50,7 +44,7 @@ public class Board {
             System.out.println();
             // Loop through all elements of current row
             for (int y = 0; y < this.board[x].length; y++)
-                System.out.print(this.board[x][y].toString() + "     ");
+                System.out.print(this.board[x][y].toString() + "\t");
         }
         System.out.println("\n===================================");
     }
@@ -61,7 +55,7 @@ public class Board {
             int col = random.nextInt(cols);
             int row = random.nextInt(rows);
             if (!hasMine(row, col)) {
-                this.board[row][col] = Cell.BOMB;
+                this.board[row][col].setType(TypeCell.BOMB);
                 mines--;
             }
         }
@@ -69,7 +63,7 @@ public class Board {
 
     //llamo a has mine y si es true gameover
     private boolean hasMine(int col, int row) {
-        if (this.board[col][row] == Cell.BOMB) {
+        if (this.board[col][row].getType().equals(TypeCell.BOMB)) {
             return true;
         }
         return false;
@@ -81,45 +75,45 @@ public class Board {
             for (int j = 0; j < cols; j++) {
                 boxcount = 0;
 
-                if (this.board[i][j] != Cell.BOMB) {
+                if (!this.board[i][j].getType().equals(TypeCell.BOMB)) {
                     if (i > 0 && j > 0) {
-                        if (this.board[i - 1][j - 1] == Cell.BOMB)
+                        if (this.board[i - 1][j - 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
 
                     if (i > 0) {
-                        if (this.board[i - 1][j] == Cell.BOMB)
+                        if (this.board[i - 1][j].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
 
                     if (i > 0 && j < cols - 1) {
-                        if (this.board[i - 1][j + 1] == Cell.BOMB)
+                        if (this.board[i - 1][j + 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
 
                     if (i < rows - 1 && j > 0) {
-                        if (this.board[i + 1][j - 1] == Cell.BOMB)
+                        if (this.board[i + 1][j - 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
                     if (i < rows - 1) {
-                        if (this.board[i + 1][j] == Cell.BOMB)
+                        if (this.board[i + 1][j].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
 
                     if (i < rows - 1 && j < cols - 1) {
-                        if (this.board[i + 1][j + 1] == Cell.BOMB)
+                        if (this.board[i + 1][j + 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
 
                     if (j > 0) {
-                        if (this.board[i][j - 1] == Cell.BOMB)
+                        if (this.board[i][j - 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
                     if (j < cols - 1) {
-                        if (this.board[i][j + 1] == Cell.BOMB)
+                        if (this.board[i][j + 1].getType().equals(TypeCell.BOMB))
                             boxcount++;
                     }
-                    this.board[i][j] = setCellNumberValue(boxcount);
+                    this.board[i][j].setType(setCellNumberValue(boxcount));
                 }
             }
         }
@@ -128,33 +122,31 @@ public class Board {
     }
 
 
-    private static Cell setCellNumberValue(int neighbor) {
+    private static TypeCell setCellNumberValue(int neighbor) {
         switch (neighbor) {
             case 0:
-                return Cell.EMPTY;
+                return TypeCell.EMPTY;
             case 1:
-                return Cell.ONE;
+                return TypeCell.ONE;
             case 2:
-                return Cell.TWO;
+                return TypeCell.TWO;
             case 3:
-                return Cell.THREE;
+                return TypeCell.THREE;
             case 4:
-                return Cell.FOUR;
+                return TypeCell.FOUR;
             case 5:
-                return Cell.FIVE;
+                return TypeCell.FIVE;
             case 6:
-                return Cell.SIX;
+                return TypeCell.SIX;
             case 7:
-                return Cell.SEVEN;
+                return TypeCell.SEVEN;
             case 8:
-                return Cell.EIGHT;
+                return TypeCell.EIGHT;
             default:
-                return Cell.EMPTY;
+                return TypeCell.EMPTY;
         }
 
     }
-
-
 
 
 }
