@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Random;
 
 @Document(collection = "board")
@@ -148,5 +149,14 @@ public class Board {
 
     }
 
-
+    @Override
+    public String toString() {
+        return "Board{" +
+                "id=" + id +
+                ", minesLeft=" + minesLeft +
+                ", board=" + Arrays.toString(board) +
+                ", cols=" + cols +
+                ", rows=" + rows +
+                '}';
+    }
 }
