@@ -4,7 +4,7 @@
 <br>
 <div *ngIf="game.inGame">
     <div *ngFor="let n of board.board; let i = index" class="row" style="border-style: solid;">
-        <div class="col text-center" *ngFor="let col of n; let j = index" style="border-style: solid;" (click)="sendClick(i, j)" (contextmenu)="onRightClick($event, i, j)">
+        <div class="col text-center" *ngFor="let col of n; let j = index" style="border-style: solid;" (click)="sendClick(i, j)" (contextmenu)="onRightClick(i, j)">
             <div [style.background-color]="getBackgroundColor(col)">
                 {{col.type}} - Flagged: {{col.isFlagged}}
             </div>

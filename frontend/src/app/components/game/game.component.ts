@@ -76,9 +76,9 @@ export class GameComponent implements OnInit {
     });
   }
 
-  @HostListener('contextmenu', ['$event'])
-  onRightClick(event, row, col) {
-    event.preventDefault();
+
+  onRightClick(row, col): void {
+    
     this.gameService.sendRightClick(row, col).subscribe(res => {
       this.board = res.board;
       this.game = res;
