@@ -1,1 +1,28 @@
+<br><br>
 <button type="button" class="btn btn-primary" (click)="enviar()">New game</button>
+
+<br>
+<div *ngIf="game.inGame">
+    <div *ngFor="let n of board.board; let i = index" class="row" style="border-style: solid;">
+        <div class="col text-center" *ngFor="let col of n; let j = index" style="border-style: solid;" (click)="sendClick(i, j)" (contextmenu)="onRightClick($event, i, j)">
+            <div [style.background-color]="getBackgroundColor(col)">
+                {{col.type}} - Flagged: {{col.isFlagged}}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div *ngIf="!game.inGame">
+    <h2>Game over</h2>
+</div>
+
+
+<br>
+<button type="button" class="btn btn-warning" (click)="saveGame()">Save game</button>
+<br>
+<h3>number of flags: {{game.flags}}</h3>
+<br>
+<h3>left mines: {{game.minesLeft}}</h3>
+
+{{ time | date: 'hh:mm:ss a' }}
