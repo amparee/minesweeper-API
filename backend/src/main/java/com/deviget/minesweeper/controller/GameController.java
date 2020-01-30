@@ -28,9 +28,10 @@ public class GameController {
 
 
     //TODO right click sent to serverside
-    @GetMapping("/right-click")
-    public ResponseEntity<String> rightClick() {
-        log.info("Method: right in GameController");
+    @GetMapping("/right-click/{x}/{y}")
+    public ResponseEntity<String> rightClick(@PathVariable("x") int x,
+                                             @PathVariable("y") int y) {
+        log.info("Method: right-click in GameController");
         return ResponseEntity.ok("right-click");
     }
 
