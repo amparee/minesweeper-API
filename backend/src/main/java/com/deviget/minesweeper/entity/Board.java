@@ -149,6 +149,46 @@ public class Board {
 
     }
 
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public int getMinesLeft() {
+        return minesLeft;
+    }
+
+    public void setMinesLeft(int minesLeft) {
+        this.minesLeft = minesLeft;
+    }
+
+    public Cell[][] getBoard() {
+        return board;
+    }
+
+    public void setBoard(Cell[][] board) {
+        this.board = board;
+    }
+
+    public int getCols() {
+        return cols;
+    }
+
+    public void setCols(int cols) {
+        this.cols = cols;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public void setRows(int rows) {
+        this.rows = rows;
+    }
+
     @Override
     public String toString() {
         return "Board{" +

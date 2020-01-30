@@ -14,6 +14,7 @@ public class Game {
     private boolean inGame;
     private Board board;
     private int timeElapsed;
+    private int notRevealed;
 
     public Game(int rows, int cols, int mines){
         this.minesLeft = mines;
@@ -26,7 +27,21 @@ public class Game {
 
     //TODO updateBoard logic
     public Game updateBoard(int x, int y){
+        if(!this.board.getBoard()[x][y].isRevealed()){
+            if(!this.board.getBoard()[x][y].isFlagged()){
+
+            }
+        }
         return null;
+    }
+
+    private boolean gameWon(){
+        if(this.notRevealed == this.minesLeft){
+            inGame = false;
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override

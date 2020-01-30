@@ -6,6 +6,7 @@ import com.deviget.minesweeper.service.IGameService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,15 +26,19 @@ public class GameController {
     }
 
 
+    //TODO right click sent to serverside
     @GetMapping("/right-click")
     public ResponseEntity<String> rightClick() {
-        return ResponseEntity.ok("new Board(8, 3)");
+        log.info("Method: right in GameController");
+        return ResponseEntity.ok("right-click");
     }
 
 
+    //TODO left click sent to server side
     @GetMapping("/left-click")
     public ResponseEntity<String> leftClick() {
-        return ResponseEntity.ok("");
+        log.info("Method: left-click in GameController");
+        return ResponseEntity.ok("left-click");
     }
 
 
@@ -45,13 +50,14 @@ public class GameController {
                                                                         "Y: " + y +
                                                                         "Mines " + mines);
         Game game = gameService.newGame(x,y,mines);
+        gameService.saveGame(game);
         return ResponseEntity.ok("New game initialized " + game.toString());
     }
 
     @PostMapping("/save-game")
-    public ResponseEntity<String> saveGame(Game game) {
-        gameService.saveGame(game);
-        return ResponseEntity.ok("");
+    public ResponseEntity<Game> saveGame(Game game) {
+        log.info("Method: saveGame in GameController");
+        return new ResponseEntity<Game> (gameService.saveGame(game), HttpStatus.OK);
     }
 
 
