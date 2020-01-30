@@ -42,7 +42,7 @@ public class Cell {
     public String toString() {
         return "Cell{" +
                 "revealed=" + revealed +
-                ", type=" + type +
+                ", type=" + type.toString() +
                 ", isFlagged=" + isFlagged +
                 '}';
     }

@@ -51,7 +51,7 @@ public class Game {
                 ", minesLeft=" + minesLeft +
                 ", flags=" + flags +
                 ", inGame=" + inGame +
-                ", board=" + board +
+                ", board=" + board.toString() +
                 ", timeElapsed=" + timeElapsed +
                 '}';
     }
