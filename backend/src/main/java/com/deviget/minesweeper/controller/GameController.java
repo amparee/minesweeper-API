@@ -1,6 +1,7 @@
 package com.deviget.minesweeper.controller;
 
 import com.deviget.minesweeper.entity.Game;
+import com.deviget.minesweeper.entity.Wrapper;
 import com.deviget.minesweeper.service.IGameService;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/game")
-@CrossOrigin()
+@CrossOrigin
 public class GameController {
 
     @Autowired
@@ -27,32 +28,42 @@ public class GameController {
     }
 
 
-    //TODO right click sent to serverside
-    @GetMapping("/right-click/{x}/{y}")
-    public ResponseEntity<String> rightClick(@PathVariable("x") int x,
-                                             @PathVariable("y") int y) {
+    //TODO left click sent to serverside
+    @GetMapping("/left-click/{x}/{y}")
+    public String leftClick(@PathVariable("x") int x,
+                            @PathVariable("y") int y) {
         log.info("Method: right-click in GameController");
-        return ResponseEntity.ok("right-click");
+        Game game = Wrapper.game;
+        game.updateBoard(x, y);
+        Gson gson = new Gson();
+        String json = gson.toJson(Wrapper.game);
+        return json;
     }
 
 
-    //TODO left click sent to server side
-    @GetMapping("/left-click")
-    public ResponseEntity<String> leftClick() {
-        log.info("Method: left-click in GameController");
-        return ResponseEntity.ok("left-click");
+    //TODO right click sent to server side
+    @GetMapping("/right-click/{x}/{y}")
+    public String rightClick(@PathVariable("x") int x,
+                             @PathVariable("y") int y) {
+        log.info("Method: right-click in GameController");
+        Game game = Wrapper.game;
+        game.setFlagged(x, y);
+        Gson gson = new Gson();
+        String json = gson.toJson(Wrapper.game);
+        return json;
     }
 
 
     @GetMapping("/new-game/{x}/{y}/{mines}")
     public String newGame(@PathVariable("x") int x,
-                               @PathVariable("y") int y,
-                               @PathVariable("mines") int mines) {
-        log.info("Method newGame in GameController with params: " +  "X: " + x +
-                                                                        "Y: " + y +
-                                                                        "Mines " + mines);
-        Game game = gameService.newGame(x,y,mines);
+                          @PathVariable("y") int y,
+                          @PathVariable("mines") int mines) {
+        log.info("Method newGame in GameController with params: " + "X: " + x +
+                "Y: " + y +
+                "Mines " + mines);
+        Game game = gameService.newGame(x, y, mines);
         game = gameService.saveGame(game);
+        Wrapper wrapper = new Wrapper(game);
         Gson gson = new Gson();
         String json = gson.toJson(game);
 
@@ -62,7 +73,7 @@ public class GameController {
     @PostMapping("/save-game")
     public ResponseEntity<Game> saveGame(Game game) {
         log.info("Method: saveGame in GameController");
-        return new ResponseEntity<Game> (gameService.saveGame(game), HttpStatus.OK);
+        return new ResponseEntity<Game>(gameService.saveGame(Wrapper.game), HttpStatus.OK);
     }
 
 

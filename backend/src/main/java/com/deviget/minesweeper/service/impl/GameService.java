@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Random;
 
 @Service
@@ -39,5 +40,10 @@ public class GameService implements IGameService {
     @Override
     public Game saveGame(Game game) {
         return gameRepository.save(game);
+    }
+
+    @Override
+    public Game findById(String id) {
+        return gameRepository.findById(id).orElseThrow(() -> new NoSuchElementException("The game with id '" + id + "' does not exist"));
     }
 }

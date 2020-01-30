@@ -12,4 +12,6 @@ public interface IGameService {
 
     public Game saveGame(Game game);
 
+    public Game findById(String id);
+
 }
