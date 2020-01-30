@@ -14,7 +14,7 @@ const httpOptions = {
 })
 export class GameService {
 
-  public GAME_API = 'http://localhost:8080/game/';
+  public GAME_API = 'http://142.93.15.46:8080/game/';
 
   constructor(private http: HttpClient) { }
 
