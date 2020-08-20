@@ -1,12 +1,11 @@
 package com.deviget.minesweeper.entity;
 
-import com.deviget.minesweeper.enums.TypeCell;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 @Document(collection = "board")
@@ -14,140 +13,152 @@ public class Board {
 
     @Id
     private ObjectId id;
-    private int minesLeft;
-    private Cell[][] board;
-    private int cols;
-    private int rows;
+    private int nRows;
+    private int nColumns;
+    private int nBombs = 0;
+    private Cell[][] cells;
+    private Cell[] bombs;
+    private int remainBombs;
 
-    public Board(int rows, int cols, int mines) {
-        this.cols = cols;
-        this.rows = rows;
-        this.makeBoard();
-        this.minesLeft = mines;
-        this.setMines(mines);
-        this.printBoard();
-        this.setNumbers();
-        this.printBoard();
+    public Board(int nRows, int nColumns, int nBombs) {
+        this.nRows = nRows;
+        this.nColumns = nColumns;
+        this.nBombs = nBombs;
+
+        makeBoard();
+        shuffleBoard();
     }
 
-    public void makeBoard() {
-        this.board = new Cell[rows][cols];
-        for (int x = 0; x < rows; x++) {
-            for (int y = 0; y < cols; y++) {
-                this.board[x][y] = new Cell(false, TypeCell.EMPTY, false);
+    private void makeBoard() {
+        cells = new Cell[nRows][nColumns];
+        bombs = new Cell[nBombs];
+        for (int r = 0; r < nRows; r++) {
+            for (int c = 0; c < nColumns; c++) {
+                cells[r][c] = new Cell(r, c);
+            }
+        }
+
+        for (int i = 0; i < nBombs; i++) {
+            int r = i / nColumns;
+            int c = (i - r * nColumns) % nColumns;
+            bombs[i] = cells[r][c];
+            bombs[i].setBomb(true);
+        }
+    }
+
+    private void shuffleBoard() {
+        int nCells = nRows * nColumns;
+        Random random = new Random();
+        for (int index1 = 0; index1 < nCells; index1++) {
+            int index2 = index1 + random.nextInt(nCells - index1);
+            if (index1 != index2) {
+                // Get cell at index1
+                int row1 = index1 / nColumns;
+                int column1 = (index1 - row1 * nColumns) % nColumns;
+                Cell cell1 = cells[row1][column1];
+
+                // Get cell at index2
+                int row2 = index2 / nColumns;
+                int column2 = (index2 - row2 * nColumns) % nColumns;
+                Cell cell2 = cells[row2][column2];
+
+                // SWAP
+                cells[row1][column1] = cell2;
+                cell2.setRowAndColumn(row1, column1);
+                cells[row2][column2] = cell1;
+                cell1.setRowAndColumn(row2, column2);
             }
         }
     }
 
-    private void printBoard() {
+    private boolean inBounds(int row, int column) {
+        return row >= 0 && row < nRows && column >= 0 && column < nColumns;
+    }
+
+    public void printBoard() {
         System.out.println("===================================");
-        for (int x = 0; x < this.board.length; x++) {
+        for (int x = 0; x < this.cells.length; x++) {
             System.out.println();
             // Loop through all elements of current row
-            for (int y = 0; y < this.board[x].length; y++)
-                System.out.print(this.board[x][y].toString() + "\t");
+            for (int y = 0; y < this.cells[x].length; y++)
+                System.out.print(this.cells[x][y].toString() + "\t");
         }
         System.out.println("\n===================================");
     }
 
-    private void setMines(int mines) {
-        Random random = new Random();
-        while (mines > 0) {
-            int col = random.nextInt(cols);
-            int row = random.nextInt(rows);
-            if (!hasMine(row, col)) {
-                this.board[row][col].setType(TypeCell.BOMB);
-                mines--;
-            }
-        }
-    }
-
-    //llamo a has mine y si es true gameover
-    private boolean hasMine(int col, int row) {
-        if (this.board[col][row].getType().equals(TypeCell.BOMB)) {
+    private boolean flipCell(Cell cell) {
+        if (!cell.isRevealed() && !cell.isGuess()) {
+            cell.flip();
+            remainBombs--;
             return true;
         }
         return false;
     }
 
-    private void setNumbers() {
-        int boxcount = 0;
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                boxcount = 0;
+    public void expandBlank(Cell cell) {
+        int[][] deltas = {
+                {-1, -1}, {-1, 0}, {-1, 1},
+                {0, -1}, {0, 1},
+                {1, -1}, {1, 0}, {1, 1}
+        };
+        Queue<Cell> toExplore = new LinkedList<>();
+        toExplore.add(cell);
 
-                if (!this.board[i][j].getType().equals(TypeCell.BOMB)) {
-                    if (i > 0 && j > 0) {
-                        if (this.board[i - 1][j - 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
+        while (!toExplore.isEmpty()) {
+            Cell current = toExplore.remove();
+            for (int[] delta : deltas) {
+                int r = current.getRow() + delta[0];
+                int c = current.getCol() + delta[1];
 
-                    if (i > 0) {
-                        if (this.board[i - 1][j].getType().equals(TypeCell.BOMB))
-                            boxcount++;
+                if (inBounds(r, c)) {
+                    Cell neighbor = cells[r][c];
+                    if (flipCell(neighbor) && neighbor.isBlank()) {
+                        toExplore.add(neighbor);
                     }
-
-                    if (i > 0 && j < cols - 1) {
-                        if (this.board[i - 1][j + 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-
-                    if (i < rows - 1 && j > 0) {
-                        if (this.board[i + 1][j - 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-                    if (i < rows - 1) {
-                        if (this.board[i + 1][j].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-
-                    if (i < rows - 1 && j < cols - 1) {
-                        if (this.board[i + 1][j + 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-
-                    if (j > 0) {
-                        if (this.board[i][j - 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-                    if (j < cols - 1) {
-                        if (this.board[i][j + 1].getType().equals(TypeCell.BOMB))
-                            boxcount++;
-                    }
-                    this.board[i][j].setType(setCellNumberValue(boxcount));
                 }
             }
         }
-
-
     }
 
-
-    private static TypeCell setCellNumberValue(int neighbor) {
-        switch (neighbor) {
-            case 0:
-                return TypeCell.EMPTY;
-            case 1:
-                return TypeCell.ONE;
-            case 2:
-                return TypeCell.TWO;
-            case 3:
-                return TypeCell.THREE;
-            case 4:
-                return TypeCell.FOUR;
-            case 5:
-                return TypeCell.FIVE;
-            case 6:
-                return TypeCell.SIX;
-            case 7:
-                return TypeCell.SEVEN;
-            case 8:
-                return TypeCell.EIGHT;
-            default:
-                return TypeCell.EMPTY;
+    public UserPlayResult playFlip(UserPlay play) {
+        Cell cell = getCellAtLocation(play);
+        if (cell == null) {
+            return new UserPlayResult(false, Game.GameState.RUNNING);
         }
 
+        if (play.isGuess()) {
+            boolean guessResult = cell.toggleGuess();
+            return new UserPlayResult(guessResult, Game.GameState.RUNNING);
+        }
+
+        boolean result = flipCell(cell);
+        if (cell.isBomb()) {
+            return new UserPlayResult(result, Game.GameState.LOST);
+        }
+
+        if (cell.isBlank()) {
+            expandBlank(cell);
+        }
+        if (remainBombs == 0) {
+            return new UserPlayResult(result, Game.GameState.WON);
+        }
+        return new UserPlayResult(result, Game.GameState.RUNNING);
+
     }
+
+    public Cell getCellAtLocation(UserPlay play) {
+        int row = play.getRow();
+        int col = play.getColumn();
+        if (!inBounds(row, col)) {
+            return null;
+        }
+        return cells[row][col];
+    }
+
+    public int getRemainBombs() {
+        return remainBombs;
+    }
+
 
     public ObjectId getId() {
         return id;
@@ -157,46 +168,5 @@ public class Board {
         this.id = id;
     }
 
-    public int getMinesLeft() {
-        return minesLeft;
-    }
 
-    public void setMinesLeft(int minesLeft) {
-        this.minesLeft = minesLeft;
-    }
-
-    public Cell[][] getBoard() {
-        return board;
-    }
-
-    public void setBoard(Cell[][] board) {
-        this.board = board;
-    }
-
-    public int getCols() {
-        return cols;
-    }
-
-    public void setCols(int cols) {
-        this.cols = cols;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
-
-    @Override
-    public String toString() {
-        return "Board{" +
-                "id=" + id +
-                ", minesLeft=" + minesLeft +
-                ", board=" + Arrays.toString(board) +
-                ", cols=" + cols +
-                ", rows=" + rows +
-                '}';
-    }
 }

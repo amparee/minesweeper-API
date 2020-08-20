@@ -32,12 +32,13 @@ public class GameController {
     @GetMapping("/left-click/{x}/{y}")
     public String leftClick(@PathVariable("x") int x,
                             @PathVariable("y") int y) {
-        log.info("Method: right-click in GameController");
+       /* log.info("Method: right-click in GameController");
         Game game = Wrapper.game;
         game.updateBoard(x, y);
         Gson gson = new Gson();
         String json = gson.toJson(Wrapper.game);
-        return json;
+        return json;*/
+        return "";
     }
 
 
@@ -45,12 +46,13 @@ public class GameController {
     @GetMapping("/right-click/{x}/{y}")
     public String rightClick(@PathVariable("x") int x,
                              @PathVariable("y") int y) {
-        log.info("Method: right-click in GameController");
+        /*log.info("Method: right-click in GameController");
         Game game = Wrapper.game;
         game.setFlagged(x, y);
         Gson gson = new Gson();
         String json = gson.toJson(Wrapper.game);
-        return json;
+        return json;*/
+        return "";
     }
 
 
@@ -58,16 +60,13 @@ public class GameController {
     public String newGame(@PathVariable("x") int x,
                           @PathVariable("y") int y,
                           @PathVariable("mines") int mines) {
-        log.info("Method newGame in GameController with params: " + "X: " + x +
-                "Y: " + y +
-                "Mines " + mines);
+        log.info("Method newGame in GameController with params:" +
+                " X: " + x +
+                " Y: " + y +
+                " Mines: " + mines);
         Game game = gameService.newGame(x, y, mines);
         game = gameService.saveGame(game);
-        Wrapper wrapper = new Wrapper(game);
-        Gson gson = new Gson();
-        String json = gson.toJson(game);
-
-        return json;
+        return new Gson().toJson(game);
     }
 
     @PostMapping("/save-game")
